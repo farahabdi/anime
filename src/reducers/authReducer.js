@@ -19,6 +19,7 @@ export default function authReducer(state = new AuthState(), {payload, type}) {
 
     case SIGN_OUT_SUCCESS:
       return new AuthState();
+      
 
     default:
       return state;

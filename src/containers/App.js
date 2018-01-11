@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import firebase from 'firebase'
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux'
 import { authActions } from '../actions';
 import { getAuth } from '../reducers/selectors'
 import { db } from '../utils/config'
 import Header from '../components/Header';
 import SignInPage from '../pages/signIn';
 import LandingPage from '../pages/landing';
-
+import { userExists } from '../utils/auth'
 
 class App extends Component {
   state = {
@@ -15,43 +16,34 @@ class App extends Component {
   }
 
   componentWillMount() {
-    this.unsubscribeQueryListener = db
-    const user = firebase.auth().currentUser;
+  
+    const { authActions } = this.props
 
-    if (user) {
-      // Create a new record if user does not exist in database.
-      // Otherwise pull user data (challenges) if user already exists.
-      let newUser = true
-      const userRef = db.collection('users').doc(`${user.uid}`)
+    authActions.initialiseApp()
 
-      userRef.get().then(user => {
-        if (user.exists) { newUser = false }
-        console.log(newUser)
-      })
-
-      if (newUser) {
-        userRef.set({
-          uid: user.uid,
-          displayName: user.displayName,
-          challenge1: false,
-          challenge2: false,
-          challenge3: false,
-          challenge4: false,
-          challenge5: false
-        })
-      }
+   /*
+    let userExist = userExists() //Look up database if user exists
+debugger
+    if (userExist) {
+      saveUser()
+    } else {
+      let ch = fetchChallenges()
     }
+    */
   }
 
+
     render() {
-      let { authenticated, signOut } = this.props
+      let { authenticated, authActions} = this.props
 
       return (
         <div>
         <Header
           authenticated={authenticated}
-          signOut={signOut}
+          signOut={authActions.signOut}
         />
+
+        <button > fetch challenges</button>
         <main>
           {authenticated ? (
             <LandingPage />
@@ -66,9 +58,23 @@ class App extends Component {
 
 const mapStateToProps = getAuth;
 
-const mapDispatchToProps = {
-  signOut: authActions.signOut
-};
+/*
+
+function mapDispatchToProps (dispatch, ownProps) {
+  return {
+    signOut: authActions.signOut,
+    saveUser: dispatch(authActions.saveUser),
+    fetchChallenges: dispatch(authActions.fetchChallenges),
+    initialiseApp: authActions.initialiseApp
+  }
+}
+
+*/
+function mapDispatchToProps (dispatch, ownProps) {
+  return {
+    authActions: bindActionCreators(authActions, dispatch)
+  }
+}
 
 export default connect( mapStateToProps, mapDispatchToProps )(App)
 

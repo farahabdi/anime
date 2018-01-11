@@ -1,5 +1,6 @@
-import { firebaseAuth } from './config';
-import { initialiseAuth } from '../actions/authActions';
+import firebase from 'firebase'
+import { firebaseAuth, db } from './config';
+import { initialiseAuth} from '../actions/authActions';
 
 
 export function initAuth(dispatch) {
@@ -14,3 +15,33 @@ export function initAuth(dispatch) {
     );
   });
 }
+
+
+
+export async function userExists() {
+  const user = firebase.auth().currentUser;
+  let userExists = false
+  let users = await db.collection('users')
+                      .doc("s8X32z5vFXOR35l6E0ibdb4Gkc72")
+                      .get()
+                      .then((doc) => userExists = doc.exists == true )
+  return userExists
+}
+
+
+
+/* export const userExists = () => {
+  const user = firebase.auth().currentUser;
+  let userExists = false
+
+  const userRef = db.collection('users')
+                    .doc("s8X32z5vFXOR35l6E0ibdb4Gkc72")
+                    .get()
+                    .then((doc) => { 
+                      userExists = doc.exists == true 
+                      debugger
+                    })
+
+  return userExists
+}
+*/
