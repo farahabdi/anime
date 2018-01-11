@@ -1,14 +1,70 @@
 import firebase from 'firebase';
-import { firebaseAuth, db } from '../utils/config';
+import { firebaseAuth } from '../utils/config';
+
+import {
+  fetchUserExists,
+  createUser,
+  fetchChallenges
+} from '../api';
+
 import {
   INIT_AUTH,
   SIGN_IN_ERROR,
   SIGN_IN_SUCCESS,
   SIGN_OUT_SUCCESS,
-  SAVE_USER,
-  START_FETCHING_CHALLENGES,
-  RECEIVED_CHALLENGES
+  RECEIVED_CHALLENGES,
+  NEW_USER_CREATED
 } from '../constants';
+
+
+export const initialiseApp= () => {
+  return function (dispatch)  {
+    dispatch(fetchUsers());
+  };
+};
+
+export const fetchUsers = () => {
+  return dispatch => {
+    fetchUserExists().then(userExists => { 
+      dispatch(receiveUserExists(userExists))
+    })
+ }
+}
+
+const receiveUserExists = (userExists) => {
+  return dispatch => {
+    if (userExists) {
+      dispatch(fetchUserChallenges())
+    } else {
+      dispatch(createNewUser())
+    }
+  };
+}
+
+export const createNewUser = () => {
+  return function (dispatch)  {
+    createUser().then(() => { 
+      dispatch(userCreated())
+    })
+  };
+};
+
+export const fetchUserChallenges = () => {
+  return function (dispatch)  {
+    fetchChallenges().then(challenges => { 
+      dispatch(receivedChallenges(challenges))
+    })
+  };
+};
+
+export const receivedChallenges = (challenges) => ({
+  type: RECEIVED_CHALLENGES,
+  payload: challenges
+})
+
+export const userCreated = () => ({
+  type: NEW_USER_CREATED
+})
 
 function authenticate(provider) {
   return dispatch => {
@@ -17,75 +73,6 @@ function authenticate(provider) {
       .catch(error => dispatch(signInError(error)));
   };
 }
-
-export const startFetchingChallenges = () => ({
-  type: START_FETCHING_CHALLENGES
-});
-
-export const receivedChallenges = () => ({
-  type: RECEIVED_CHALLENGES
-});
-
-export const saveUser = () => {
-  return function (dispatch)  {
-    const user = firebase.auth().currentUser;
-    const userRef = db.collection('users').doc(`${user.uid}`)
-
-    userRef.set({
-      uid: user.uid,
-      displayName: user.displayName,
-      birthday: '',
-      email: user.email
-    })
-
-    userRef.collection("challenges")
-    .doc(`${user.uid}`)
-    .set({
-       challenge1: false,
-       challenge2: false,
-       challenge3: false,
-       challenge4: false,
-       challenge5: false
-    })
-
-  };
-};
-
-export const initialiseApp= () => {
-  return function (dispatch)  {
-    dispatch(checkUserExists());
-  };
-};
-
-
-export const fetchChallenges = () => {
-  return function (dispatch)  {
-
-    const user = firebase.auth().currentUser;
-
-    db.collection("users")
-      .doc(`${user.uid}`)
-      .collection("challenges")
-      .doc(`${user.uid}`)
-      .onSnapshot(querySnapshot => {
-              const data = querySnapshot.data()
-              let challenges = []
-              debugger
-
-              querySnapshot.forEach(function(doc) {
-                let x = 2
-                
-            });
-              debugger
-            })
-  };
-};
-
-
-export const checkUserExists = () => ({
-  type: 'CHECK_USER_EXISTS'
-});
-
 
 export const initialiseAuth = (user) => ({
   type: INIT_AUTH,
@@ -104,12 +91,8 @@ export const signInError = (error) => ({
 
 
 export const signInWithFacebook = () => (
-  authenticate(new firebase.auth.FacebookAuthProvider)
+  authenticate(new firebase.auth.FacebookAuthProvider())
 )
-
-
-
-
 
 export const signOut = () => {
   return function (dispatch)  {
@@ -118,6 +101,6 @@ export const signOut = () => {
   };
 }
 
-export const signOutSuccess = () => {
-    type: SIGN_OUT_SUCCESS
-}
+export const signOutSuccess = () => ({
+  type: SIGN_OUT_SUCCESS
+})
