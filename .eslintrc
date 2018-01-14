@@ -15,6 +15,9 @@
       "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
       "no-use-before-define": ["error", { "functions": false, "classes": false }],
       "global-require": "off",
-      "import/no-dynamic-require": "off"
+      "import/no-dynamic-require": "off",
+      "class-methods-use-this": "off",
+      "no-unused-expressions": "off",
+      "no-mixed-operators": "off"
     }
   }

@@ -61,15 +61,18 @@
     "firebase": "^4.8.1",
     "fs-extra": "3.0.1",
     "immutable": "^3.8.2",
+    "lodash": "^4.17.4",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dev-utils": "^4.2.1",
     "react-dom": "^16.2.0",
+    "react-prefixr": "^0.1.0",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1",
+    "rxjs": "^5.5.6",
     "webpack": "3.8.1"
   }
 }

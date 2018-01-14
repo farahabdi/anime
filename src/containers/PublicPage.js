@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { authActions } from '../actions';
 
-export class PublicPage extends Component {
+class PublicPage extends Component {
   componentWillMount() { }
   render() {
     const { signInWithFacebook } = this.props;
